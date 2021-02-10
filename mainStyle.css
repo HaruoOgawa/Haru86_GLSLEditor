@@ -1,0 +1,26 @@
+.main{
+    margin-top: 10px;
+}
+
+#webglCanvas{
+    width: 750px;
+    height:500px;
+    float: left;
+}
+
+#canvas{
+    width: 750px;
+    height: 500px;
+}
+
+#sub{
+    margin-left: 10px;
+    float: left;
+}
+
+#editor{
+    clear: both;
+    width: 700px;
+    height:500px;
+    
+}

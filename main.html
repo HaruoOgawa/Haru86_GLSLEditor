@@ -16,20 +16,19 @@
     
         <div id="sub">
             <div id="editor">
-                function foo(items)
+                void main(void)
                 {
-                    var x="All this is syntax highlighted";
-                    return x;
+                    gl_FragColor=vec4(1.0,0.0,0.0,1.0);
                 }
             </div>
-            <input type="submit" value="compile" id="compileButton">
+            <input type="button" value="compile" id="compileButton" onclick="clickCompileButton()">
         </div>
 
         <script src="https://pagecdn.io/lib/ace/1.4.12/ace.min.js" crossorigin="anonymous" integrity="sha256-T5QdmsCQO5z8tBAXMrCZ4f3RX8wVdiA0Fu17FGnU1vU=" ></script>
         <script>
             var editor=ace.edit("editor");
             editor.setTheme("ace/theme/monokai");
-            editor.session.setMode("ace/mode/javascript");
+            editor.session.setMode("ace/mode/glsl");
         </script>
     </div>
 </body>

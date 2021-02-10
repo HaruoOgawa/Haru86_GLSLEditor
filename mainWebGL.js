@@ -1,3 +1,11 @@
+function clickCompileButton()
+{
+    var compileButton=document.getElementById("editor");
+    console.log(compileButton.innerText);
+}
+
+var 
+
 onload=function()
 {
     //preparing//////////////////////////////////////////////////////

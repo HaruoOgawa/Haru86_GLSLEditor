@@ -25,13 +25,15 @@ onload=function()
 
     var index=[
         0,2,1,
-        1,2,3
+        0,2,3
     ];
 
     var position_vbo=create_vbo(position_data);
     gl.bindBuffer(gl.ARRAY_BUFFER,position_vbo);
     gl.enableVertexAttribArray(attLocation);
     gl.vertexAttribPointer(attLocation,attStride,gl.FLOAT,false,0,0);
+    var ibo=create_ibo(index);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
 
     //uniform Info
     var uniLocation=new Array(1);
@@ -52,7 +54,8 @@ onload=function()
     //rendering
     m.multiply(tmpMatrix,mMatrix,mvpMatrix);
     gl.uniformMatrix4fv(uniLocation[0],false,mvpMatrix);
-    gl.drawArrays(gl.POINTS,0,4);
+    //gl.drawArrays(gl.POINTS,0,4);
+    gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0,);
     gl.flush();
 
 
@@ -106,6 +109,15 @@ onload=function()
         gl.bindBuffer(gl.ARRAY_BUFFER,null);
 
         return vbo;
+    }
+
+    function create_ibo(data)
+    {
+        var ibo=gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Int16Array(data),gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
+        return ibo;
     }
 
 };

@@ -12,19 +12,48 @@ onload=function()
     var fragment_shader=create_shader('fs',fs);
     var prg=create_program(vertex_shader,fragment_shader);
 
+
+    //attribute Info
     var attLocation=gl.getAttribLocation(prg,'position');
     var attStride=3;
     var position_data=[
+        -1,1,0,
         1,1,0,
         1,-1,0,
-        -1,-1,0,
-        -1,1,0
+        -1,-1,0
     ];
-    var position_vbo=create_vbo(position_data);
 
+    var index=[
+        0,2,1,
+        1,2,3
+    ];
+
+    var position_vbo=create_vbo(position_data);
     gl.bindBuffer(gl.ARRAY_BUFFER,position_vbo);
     gl.enableVertexAttribArray(attLocation);
     gl.vertexAttribPointer(attLocation,attStride,gl.FLOAT,false,0,0);
+
+    //uniform Info
+    var uniLocation=new Array(1);
+    uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
+
+    //matrix
+    var m=new matIV();
+    var mMatrix=m.identity(m.create());
+    var vMatrix=m.identity(m.create());
+    var pMatrix=m.identity(m.create());
+    var tmpMatrix=m.identity(m.create());
+    var mvpMatrix=m.identity(m.create());
+
+    m.lookAt([0.0,0.0,2.0],[0.0,0.0,0.0],[0.0,1.0,0.0],vMatrix);
+    m.perspective(90,c.clientWidth/c.clientHeight,0.1,100,pMatrix);
+    m.multiply(pMatrix,vMatrix,tmpMatrix);
+
+    //rendering
+    m.multiply(tmpMatrix,mMatrix,mvpMatrix);
+    gl.uniformMatrix4fv(uniLocation[0],false,mvpMatrix);
+    gl.drawArrays(gl.POINTS,0,4);
+    gl.flush();
 
 
     //define function////////////////////////////////////////////////////
@@ -33,10 +62,10 @@ onload=function()
         var shader;
         switch(shaderName)
         {
-            case vs:
+            case 'vs':
                 shader=gl.createShader(gl.VERTEX_SHADER);
                 break;
-            case fs:
+            case 'fs':
                 shader=gl.createShader(gl.FRAGMENT_SHADER);
                 break;
             default:

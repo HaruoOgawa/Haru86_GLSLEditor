@@ -1,10 +1,18 @@
+var vertex_shader;
+var fragment_shader;
+var prg;
 function clickCompileButton()
 {
     var compileButton=document.getElementById("editor");
-    console.log(compileButton.innerText);
+    console.log("clicked compileButton !!");
+
+    //redefine
+    vertex_shader=create_shader('vs',vs);
+    fragment_shader=create_shader('fs',compileButton.innerText);
+    prg=create_program(vertex_shader,fragment_shader);
+
 }
 
-var 
 
 onload=function()
 {
@@ -12,18 +20,18 @@ onload=function()
     var c=document.getElementById('canvas');
     var gl= c.getContext('webgl');
 
-    gl.clearColor(0.0,0.0,0.0,1.0);
-    gl.clearDepth(1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT,gl.DEPTH_BUFFER_BIT);
+    ////////////////////////////////////////////////////////////////
 
-    var vertex_shader=create_shader('vs',vs);
-    var fragment_shader=create_shader('fs',fs);
-    var prg=create_program(vertex_shader,fragment_shader);
+    vertex_shader=create_shader('vs',vs);
+    fragment_shader=create_shader('fs',fs);
+    prg=create_program(vertex_shader,fragment_shader);
 
 
     //attribute Info
-    var attLocation=gl.getAttribLocation(prg,'position');
-    var attStride=3;
+    var attLocation=new Array(1);
+    attLocation[0]=gl.getAttribLocation(prg,'position');
+    var attStride=new Array(1);
+    attStride[0]=3;
     var position_data=[
         -1,1,0,
         1,1,0,
@@ -38,15 +46,18 @@ onload=function()
 
     var position_vbo=create_vbo(position_data);
     gl.bindBuffer(gl.ARRAY_BUFFER,position_vbo);
-    gl.enableVertexAttribArray(attLocation);
-    gl.vertexAttribPointer(attLocation,attStride,gl.FLOAT,false,0,0);
+    gl.enableVertexAttribArray(attLocation[0]);
+    gl.vertexAttribPointer(attLocation[0],attStride[0],gl.FLOAT,false,0,0);
     var ibo=create_ibo(index);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
 
     //uniform Info
-    var uniLocation=new Array(1);
+    var uniLocation=new Array(2);
     uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
+    uniLocation[1]=gl.getUniformLocation(prg,'time');
 
+
+    ////////////////////////////////////////////////////////////////////////////
     //matrix
     var m=new matIV();
     var mMatrix=m.identity(m.create());
@@ -55,16 +66,30 @@ onload=function()
     var tmpMatrix=m.identity(m.create());
     var mvpMatrix=m.identity(m.create());
 
-    m.lookAt([0.0,0.0,2.0],[0.0,0.0,0.0],[0.0,1.0,0.0],vMatrix);
-    m.perspective(90,c.clientWidth/c.clientHeight,0.1,100,pMatrix);
-    m.multiply(pMatrix,vMatrix,tmpMatrix);
+    var time=0.0;
+    (function(){
+        time++;
 
-    //rendering
-    m.multiply(tmpMatrix,mMatrix,mvpMatrix);
-    gl.uniformMatrix4fv(uniLocation[0],false,mvpMatrix);
-    //gl.drawArrays(gl.POINTS,0,4);
-    gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0,);
-    gl.flush();
+        gl.clearColor(0.0,0.0,0.0,1.0);
+        gl.clearDepth(1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT,gl.DEPTH_BUFFER_BIT);
+
+        m.lookAt([0.0,0.0,2.0],[0.0,0.0,0.0],[0.0,1.0,0.0],vMatrix);
+        m.perspective(90,c.clientWidth/c.clientHeight,0.1,100,pMatrix);
+        m.multiply(pMatrix,vMatrix,tmpMatrix);
+
+        //rendering
+        m.multiply(tmpMatrix,mMatrix,mvpMatrix);
+        gl.uniformMatrix4fv(uniLocation[0],false,mvpMatrix);
+        gl.uniform1f(uniLocation[1],time*0.1);
+        //gl.drawArrays(gl.POINTS,0,4);
+        gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0,);
+        gl.flush();
+
+        setTimeout(arguments.callee,1000/30);
+    })();
+
+    
 
 
     //define function////////////////////////////////////////////////////

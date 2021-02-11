@@ -1,4 +1,5 @@
 //gloabal property////////////////
+var editor;
 var c;
 var gl;
 
@@ -23,12 +24,12 @@ var index=[
 
 function clickCompileButton()
 {
-    var compileButton=document.getElementById("editor");
-    console.log(compileButton.textContent);
-
+    console.log(editor.getValue());
+    console.log(typeof(editor.getValue()));
+    
     //redefine
-   /* vertex_shader=create_shader('vs',vs);
-    fragment_shader=create_shader('fs',compileButton.innerText);
+    vertex_shader=create_shader('vs',vs);
+    fragment_shader=create_shader('fs',editor.getValue());
     prg=create_program(vertex_shader,fragment_shader);
 
     //attribute Info
@@ -37,13 +38,17 @@ function clickCompileButton()
     
     //uniform Info
      uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
-     uniLocation[1]=gl.getUniformLocation(prg,'time');*/
+     uniLocation[1]=gl.getUniformLocation(prg,'time');
 
 }
 
 
 onload=function()
 {
+    editor=ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/glsl");
+
     //preparing//////////////////////////////////////////////////////
     c=document.getElementById('canvas');
     gl= c.getContext('webgl');

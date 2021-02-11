@@ -27,6 +27,8 @@ var texcoord=[
     1.0,0.0,
     0.0,0.0
 ];
+
+var resolution;
 ////////////////////////////////
 
 function clickCompileButton()
@@ -47,7 +49,8 @@ function clickCompileButton()
     
     //uniform Info
      uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
-     uniLocation[1]=gl.getUniformLocation(prg,'time');
+     uniLocation[1]=gl.getUniformLocation(prg,'iTime');
+     uniLocation[2]=gl.getUniformLocation(prg,'iResolution');
 
 }
 
@@ -61,6 +64,7 @@ onload=function()
     //preparing//////////////////////////////////////////////////////
     c=document.getElementById('canvas');
     gl= c.getContext('webgl');
+    resolution=[c.width,c.height];
 
     ////////////////////////////////////////////////////////////////
 
@@ -82,7 +86,8 @@ onload=function()
 
     //uniform Info
     uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
-    uniLocation[1]=gl.getUniformLocation(prg,'time');
+    uniLocation[1]=gl.getUniformLocation(prg,'iTime');
+    uniLocation[2]=gl.getUniformLocation(prg,'iResolution');
 
     ////////////////////////////////////////////////////////////////////////////
     //matrix
@@ -113,6 +118,7 @@ onload=function()
         m.multiply(tmpMatrix,mMatrix,mvpMatrix);
         gl.uniformMatrix4fv(uniLocation[0],false,mvpMatrix);
         gl.uniform1f(uniLocation[1],time*0.1);
+        gl.uniform2fv(uniLocation[2],resolution);
         //gl.drawArrays(gl.POINTS,0,4);
         gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0,);
         gl.flush();

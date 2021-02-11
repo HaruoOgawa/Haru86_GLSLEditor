@@ -16,13 +16,14 @@
     
         <div id="sub">
             <div id="editor">
-                precision mediump float;
-                uniform float time;
-                varying vec2 vTexcoord;
-                void main(void)
-                {
-                    gl_FragColor=vec4(vTexcoord.x,vTexcoord.y,0.0,1.0);
-                }
+precision mediump float;
+uniform float iTime;
+uniform vec2 iResolution;
+varying vec2 fragCoord;
+void main(void)
+{
+    gl_FragColor=vec4(fragCoord.x,fragCoord.y,0.0,1.0);
+}
             </div>
             <input type="button" value="compile" id="compileButton" onclick="clickCompileButton()">
         </div>

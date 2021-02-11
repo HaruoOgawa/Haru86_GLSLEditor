@@ -117,7 +117,7 @@ onload=function()
 
         m.multiply(tmpMatrix,mMatrix,mvpMatrix);
         gl.uniformMatrix4fv(uniLocation[0],false,mvpMatrix);
-        gl.uniform1f(uniLocation[1],time*0.1);
+        gl.uniform1f(uniLocation[1],time*0.05);
         gl.uniform2fv(uniLocation[2],resolution);
         //gl.drawArrays(gl.POINTS,0,4);
         gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0,);

@@ -1,15 +1,43 @@
+//gloabal property////////////////
+var c;
+var gl;
+
 var vertex_shader;
 var fragment_shader;
 var prg;
+var attLocation=new Array(1);
+var attStride=new Array(1);
+var uniLocation=new Array(2);
+var position_data=[
+    -1,1,0,
+    1,1,0,
+    1,-1,0,
+    -1,-1,0
+];
+
+var index=[
+    0,2,1,
+    0,2,3
+];
+////////////////////////////////
+
 function clickCompileButton()
 {
     var compileButton=document.getElementById("editor");
-    console.log("clicked compileButton !!");
+    console.log(compileButton.textContent);
 
     //redefine
-    vertex_shader=create_shader('vs',vs);
+   /* vertex_shader=create_shader('vs',vs);
     fragment_shader=create_shader('fs',compileButton.innerText);
     prg=create_program(vertex_shader,fragment_shader);
+
+    //attribute Info
+    attLocation[0]=gl.getAttribLocation(prg,'position');
+    attStride[0]=3;
+    
+    //uniform Info
+     uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
+     uniLocation[1]=gl.getUniformLocation(prg,'time');*/
 
 }
 
@@ -17,8 +45,8 @@ function clickCompileButton()
 onload=function()
 {
     //preparing//////////////////////////////////////////////////////
-    var c=document.getElementById('canvas');
-    var gl= c.getContext('webgl');
+    c=document.getElementById('canvas');
+    gl= c.getContext('webgl');
 
     ////////////////////////////////////////////////////////////////
 
@@ -28,34 +56,16 @@ onload=function()
 
 
     //attribute Info
-    var attLocation=new Array(1);
     attLocation[0]=gl.getAttribLocation(prg,'position');
-    var attStride=new Array(1);
     attStride[0]=3;
-    var position_data=[
-        -1,1,0,
-        1,1,0,
-        1,-1,0,
-        -1,-1,0
-    ];
-
-    var index=[
-        0,2,1,
-        0,2,3
-    ];
 
     var position_vbo=create_vbo(position_data);
-    gl.bindBuffer(gl.ARRAY_BUFFER,position_vbo);
-    gl.enableVertexAttribArray(attLocation[0]);
-    gl.vertexAttribPointer(attLocation[0],attStride[0],gl.FLOAT,false,0,0);
+    var vboData=[position_vbo];
     var ibo=create_ibo(index);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
 
     //uniform Info
-    var uniLocation=new Array(2);
     uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
     uniLocation[1]=gl.getUniformLocation(prg,'time');
-
 
     ////////////////////////////////////////////////////////////////////////////
     //matrix
@@ -79,6 +89,10 @@ onload=function()
         m.multiply(pMatrix,vMatrix,tmpMatrix);
 
         //rendering
+        //model1
+        set_attribute(vboData,attLocation,attStride);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
+
         m.multiply(tmpMatrix,mMatrix,mvpMatrix);
         gl.uniformMatrix4fv(uniLocation[0],false,mvpMatrix);
         gl.uniform1f(uniLocation[1],time*0.1);
@@ -89,68 +103,77 @@ onload=function()
         setTimeout(arguments.callee,1000/30);
     })();
 
-    
-
-
-    //define function////////////////////////////////////////////////////
-    function create_shader(shaderName,shaderSource)
-    {
-        var shader;
-        switch(shaderName)
-        {
-            case 'vs':
-                shader=gl.createShader(gl.VERTEX_SHADER);
-                break;
-            case 'fs':
-                shader=gl.createShader(gl.FRAGMENT_SHADER);
-                break;
-            default:
-                return;
-        }
-        gl.shaderSource(shader,shaderSource);
-        gl.compileShader(shader);
-
-        if(gl.getShaderParameter(shader,gl.COMPILE_STATUS))
-        {
-            return shader;
-        }else{
-            alert(gl.getShaderInfoLog(shader));
-        }
-    }
-
-    function create_program(vertex,fragment)
-    {
-        var program=gl.createProgram();
-        gl.attachShader(program,vertex);
-        gl.attachShader(program,fragment);
-        gl.linkProgram(program);
-        if(gl.getProgramParameter(program,gl.LINK_STATUS))
-        {
-            gl.useProgram(program);
-            return program;
-        }else{
-            alert(gl.getProgramInfoLog(program));
-        }
-
-    }
-    
-    function create_vbo(data)
-    {
-        var vbo=gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
-        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER,null);
-
-        return vbo;
-    }
-
-    function create_ibo(data)
-    {
-        var ibo=gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Int16Array(data),gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
-        return ibo;
-    }
-
 };
+
+//define function////////////////////////////////////////////////////
+function create_shader(shaderName,shaderSource)
+{
+    var shader;
+    switch(shaderName)
+    {
+        case 'vs':
+            shader=gl.createShader(gl.VERTEX_SHADER);
+            break;
+        case 'fs':
+            shader=gl.createShader(gl.FRAGMENT_SHADER);
+            break;
+        default:
+            return;
+    }
+    gl.shaderSource(shader,shaderSource);
+    gl.compileShader(shader);
+
+    if(gl.getShaderParameter(shader,gl.COMPILE_STATUS))
+    {
+        return shader;
+    }else{
+        alert(gl.getShaderInfoLog(shader));
+    }
+}
+
+function create_program(vertex,fragment)
+{
+    var program=gl.createProgram();
+    gl.attachShader(program,vertex);
+    gl.attachShader(program,fragment);
+    gl.linkProgram(program);
+    if(gl.getProgramParameter(program,gl.LINK_STATUS))
+    {
+        gl.useProgram(program);
+        return program;
+    }else{
+        alert(gl.getProgramInfoLog(program));
+    }
+
+}
+
+function create_vbo(data)
+{
+    var vbo=gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER,null);
+
+    return vbo;
+}
+
+function create_ibo(data)
+{
+    var ibo=gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Int16Array(data),gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,null);
+    return ibo;
+}
+
+function set_attribute(vboArray,attLocation,attStride)
+{
+    for(var i in vboArray)
+    {
+        gl.bindBuffer(gl.ARRAY_BUFFER,vboArray[i]);
+        gl.enableVertexAttribArray(attLocation[i]);
+        gl.vertexAttribPointer(attLocation[i],attStride[i],gl.FLOAT,false,0,0);
+    }
+
+   
+}

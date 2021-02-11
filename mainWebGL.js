@@ -20,6 +20,13 @@ var index=[
     0,2,1,
     0,2,3
 ];
+
+var texcoord=[
+    0.0,1.0,
+    1.0,1.0,
+    1.0,0.0,
+    0.0,0.0
+];
 ////////////////////////////////
 
 function clickCompileButton()
@@ -34,7 +41,9 @@ function clickCompileButton()
 
     //attribute Info
     attLocation[0]=gl.getAttribLocation(prg,'position');
+    attLocation[1]=gl.getAttribLocation(prg,'texcoord');
     attStride[0]=3;
+    attStride[1]=2;
     
     //uniform Info
      uniLocation[0]=gl.getUniformLocation(prg,'mvpMatrix');
@@ -62,10 +71,13 @@ onload=function()
 
     //attribute Info
     attLocation[0]=gl.getAttribLocation(prg,'position');
+    attLocation[1]=gl.getAttribLocation(prg,'texcoord');
     attStride[0]=3;
+    attStride[1]=2;
 
     var position_vbo=create_vbo(position_data);
-    var vboData=[position_vbo];
+    var texcoord_vbo=create_vbo(texcoord);
+    var vboData=[position_vbo,texcoord_vbo];
     var ibo=create_ibo(index);
 
     //uniform Info

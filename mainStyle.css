@@ -3,14 +3,14 @@
 }
 
 #webglCanvas{
-    width: 750px;
-    height:500px;
+    width: 700px;
+    height:700px;
     float: left;
 }
 
 #canvas{
-    width: 750px;
-    height: 500px;
+    width: 700px;
+    height: 700px;
 }
 
 #sub{

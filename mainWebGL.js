@@ -64,6 +64,13 @@ onload=function()
     //preparing//////////////////////////////////////////////////////
     c=document.getElementById('canvas');
     gl= c.getContext('webgl');
+    c.width=700;
+    c.height=700;
+    c.width*=devicePixelRatio;
+    c.height*=devicePixelRatio;
+    c.style.width=String(c.width/devicePixelRatio)+"px";
+    c.style.height=String(c.height/devicePixelRatio)+"px";
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     resolution=[c.width,c.height];
 
     ////////////////////////////////////////////////////////////////
@@ -107,7 +114,7 @@ onload=function()
         gl.clear(gl.COLOR_BUFFER_BIT,gl.DEPTH_BUFFER_BIT);
 
         m.lookAt([0.0,0.0,2.0],[0.0,0.0,0.0],[0.0,1.0,0.0],vMatrix);
-        m.perspective(90,c.clientWidth/c.clientHeight,0.1,100,pMatrix);
+        m.perspective(90,c.width/c.height,0.1,100,pMatrix);
         m.multiply(pMatrix,vMatrix,tmpMatrix);
 
         //rendering
